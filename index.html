@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oil Unit Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .converter-container {
+            background: #1E1E1E;
+            max-width: 450px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #bbb;
+            flex: 1;
+        }
+
+        select, input {
+            flex: 2;
+            padding: 10px;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #result {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="converter-container">
+        <h2>Oil Unit Converter</h2>
+
+        <div class="row">
+            <label for="oilType">Oil Type:</label>
+            <select id="oilType"></select>
+        </div>
+
+        <div class="row">
+            <label for="valueInput">Amount:</label>
+            <input type="number" id="valueInput" placeholder="Enter amount">
+        </div>
+
+        <div class="row">
+            <label for="fromUnit">From:</label>
+            <select id="fromUnit"></select>
+        </div>
+
+        <div class="row">
+            <label for="toUnit">To:</label>
+            <select id="toUnit"></select>
+        </div>
+
+        <p id="result">Result: -</p>
+    </div>
+
+    <script>
+        const oilDensities = {
+            "EN590": 820,
+            "Jet A1": 800,
+            "D6": 870,
+            "Bitumen": 1010,
+            "Gasoline": 730,
+            "Crude": 850
+        };
+
+        const unitMultipliers = {
+            "barrel": 0.158987,   
+            "liter": 0.001,       
+            "gallon": 0.00378541, 
+            "cubic_meter": 1,     
+            "metric_ton": null    
+        };
+
+        function populateDropdowns() {
+            const oilTypes = Object.keys(oilDensities);
+            const unitTypes = Object.keys(unitMultipliers);
+
+            const oilSelect = document.getElementById("oilType");
+            const fromSelect = document.getElementById("fromUnit");
+            const toSelect = document.getElementById("toUnit");
+
+            oilTypes.forEach(oil => {
+                let option = document.createElement("option");
+                option.value = oil;
+                option.textContent = oil;
+                oilSelect.appendChild(option);
+            });
+
+            unitTypes.forEach(unit => {
+                let option1 = document.createElement("option");
+                let option2 = document.createElement("option");
+                option1.value = unit;
+                option2.value = unit;
+                option1.textContent = unit.toUpperCase();
+                option2.textContent = unit.toUpperCase();
+                fromSelect.appendChild(option1);
+                toSelect.appendChild(option2);
+            });
+        }
+
+        function convertOilUnits() {
+            let volume = parseFloat(document.getElementById("valueInput").value);
+            let fromUnit = document.getElementById("fromUnit").value;
+            let toUnit = document.getElementById("toUnit").value;
+            let oilType = document.getElementById("oilType").value;
+
+            if (!volume || !oilDensities[oilType] || !unitMultipliers[fromUnit] || !unitMultipliers[toUnit]) {
+                document.getElementById("result").innerText = "Result: Invalid input.";
+                return;
+            }
+
+            let density = oilDensities[oilType];
+
+            // Step 1: Convert from input unit to Metric Ton
+            let metricTon;
+            if (fromUnit === "metric_ton") {
+                metricTon = volume;
+            } else {
+                metricTon = (density * (volume * unitMultipliers[fromUnit])) / 1000;
+            }
+
+            // Step 2: Convert Metric Ton to target unit
+            let result;
+            if (toUnit === "metric_ton") {
+                result = metricTon;
+            } else {
+                result = (metricTon * 1000) / (density * unitMultipliers[toUnit]);
+            }
+
+            document.getElementById("result").innerText = `Result: ${result.toFixed(4)} ${toUnit}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            populateDropdowns();
+            document.getElementById("valueInput").addEventListener("input", convertOilUnits);
+            document.getElementById("oilType").addEventListener("change", convertOilUnits);
+            document.getElementById("fromUnit").addEventListener("change", convertOilUnits);
+            document.getElementById("toUnit").addEventListener("change", convertOilUnits);
+        });
+
+    </script>
+
+</body>
+</html>
