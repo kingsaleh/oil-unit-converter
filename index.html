@@ -95,8 +95,8 @@
             "barrel": 0.158987,   
             "liter": 0.001,       
             "gallon": 0.00378541, 
-            "cubic_meter": 1,     
-            "metric_ton": null    
+            "cubic meter": 1,     
+            "metric ton": null    
         };
 
         function populateDropdowns() {
@@ -107,20 +107,25 @@
             const fromSelect = document.getElementById("fromUnit");
             const toSelect = document.getElementById("toUnit");
 
+            // Populate oil types
             oilTypes.forEach(oil => {
                 let option = document.createElement("option");
                 option.value = oil;
-                option.textContent = oil;
+                option.textContent = oil; // Oil names are fine as they are
                 oilSelect.appendChild(option);
             });
 
+            // Populate unit types with formatted names
             unitTypes.forEach(unit => {
+                let formattedUnit = unit.replace("_", " ").replace(/\b\w/g, char => char.toUpperCase()); // Capitalize
                 let option1 = document.createElement("option");
                 let option2 = document.createElement("option");
+
                 option1.value = unit;
                 option2.value = unit;
-                option1.textContent = unit.toUpperCase();
-                option2.textContent = unit.toUpperCase();
+                option1.textContent = formattedUnit;
+                option2.textContent = formattedUnit;
+
                 fromSelect.appendChild(option1);
                 toSelect.appendChild(option2);
             });
@@ -141,7 +146,7 @@
 
             // Step 1: Convert from input unit to Metric Ton
             let metricTon;
-            if (fromUnit === "metric_ton") {
+            if (fromUnit === "metric ton") {
                 metricTon = volume;
             } else {
                 metricTon = (density * (volume * unitMultipliers[fromUnit])) / 1000;
@@ -149,7 +154,7 @@
 
             // Step 2: Convert Metric Ton to target unit
             let result;
-            if (toUnit === "metric_ton") {
+            if (toUnit === "metric ton") {
                 result = metricTon;
             } else {
                 result = (metricTon * 1000) / (density * unitMultipliers[toUnit]);
@@ -165,7 +170,6 @@
             document.getElementById("fromUnit").addEventListener("change", convertOilUnits);
             document.getElementById("toUnit").addEventListener("change", convertOilUnits);
         });
-
     </script>
 
 </body>
